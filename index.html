@@ -1,8 +1,662 @@
 <!DOCTYPE html>
-<html>
-<head><title>我的網站</title></head>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>澳門消費券管家</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        .header-container { margin-bottom: 20px; }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header-title { font-size: 1.5rem; color: #333; }
+        .tab-container {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            background: white;
+            padding: 5px;
+            border-radius: 10px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            background: #2196F3;
+            color: white;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        /* Summary styles */
+        .summary-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .summary-item:last-child { border-bottom: none; }
+        .summary-value { color: #2196F3; font-weight: bold; }
+        
+        /* Table styles */
+        .table-container { overflow-x: auto; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        th { background: #f8f8f8; font-weight: bold; }
+        
+        /* Weekly record styles */
+        .week-selector {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .week-selector h3 { margin-bottom: 10px; }
+        .week-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .week-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            min-width: 50px;
+            text-align: center;
+        }
+        .week-btn:hover { background: #f0f0f0; }
+        .week-btn.active { background: #2196F3; color: white; border-color: #2196F3; }
+        
+        .week-input-section {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        .week-input-section h3 { margin-bottom: 15px; }
+        .channel-input-row {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .channel-input-row:last-child { border-bottom: none; }
+        .channel-name { flex: 1; font-weight: bold; }
+        .channel-input {
+            width: 100px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: right;
+        }
+        .save-week-btn {
+            width: 100%;
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .save-week-btn:hover { background: #45a049; }
+        
+        /* Week history */
+        .week-history {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .week-history-header {
+            background: #f8f8f8;
+            padding: 15px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .week-record-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .week-record-item:last-child { border-bottom: none; }
+        .week-record-item:hover { background: #fafafa; }
+        .week-total { font-weight: bold; color: #4CAF50; }
+        .week-actions { display: flex; gap: 10px; }
+        .week-actions button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .week-actions .edit-btn { background: #2196F3; color: white; }
+        .week-actions .delete-btn { background: #e74c3c; color: white; }
+        
+        /* Original coupon styles */
+        .main-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+        .channel-menu {
+            display: none;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .channel-btn {
+            background: #2196F3;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .filter-btn {
+            background: #2196F3;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .filter-btn.active { background: #1976D2; }
+        
+        .group-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .edit-btn { color: #2196F3; cursor: pointer; }
+        
+        .edit-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            min-width: 300px;
+        }
+        .edit-panel h3 { margin-bottom: 15px; }
+        .coupon-section { margin: 10px 0; }
+        .coupon-section label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .coupon-section button {
+            padding: 8px 12px;
+            margin: 2px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .coupon-section button.selected-btn { background: #2196F3; color: white; border-color: #2196F3; }
+        
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            color: #888;
+        }
+        
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .header-title { font-size: 1.2rem; }
+            .tab-btn { padding: 10px; font-size: 0.9rem; }
+            th, td { padding: 8px 4px; font-size: 0.85rem; }
+            .channel-input { width: 80px; }
+        }
+    </style>
+</head>
 <body>
-    <h1>你好，世界！</h1>
-    <p>這是我通過 GitHub Pages 建立的網頁。</p>
+    <div class="header-container">
+        <div class="header-top">
+            <h1 class="header-title">消費券記錄App</h1>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTab('coupon')">消費券追蹤</button>
+        <button class="tab-btn" onclick="switchTab('weekly')">每週記錄</button>
+    </div>
+
+    <!-- 消費券追蹤 Tab -->
+    <div id="couponTab" class="tab-content active">
+        <div class="summary-container">
+            <div class="summary-item">
+                <span>總消費額</span>
+                <span class="summary-value" id="totalConsumption">$0</span>
+            </div>
+            <div class="summary-item">
+                <span>剩餘消費券金額</span>
+                <span class="summary-value" id="remainingCoupons">$0</span>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="toggleFilter()" id="filterBtn">顯示全部</button>
+            <button class="filter-btn" onclick="promptDeleteExpired()">刪除過期</button>
+        </div>
+
+        <button class="main-btn" onclick="toggleChannels()">＋ 快速新增</button>
+        <div class="channel-menu" id="channelMenu">
+            <button class="channel-btn" data-channel="中銀 BOC">中銀 BOC</button>
+            <button class="channel-btn" data-channel="工銀 ICBC">工銀 ICBC</button>
+            <button class="channel-btn" data-channel="支付寶 Alipay">支付寶 Alipay</button>
+            <button class="channel-btn" data-channel="澳門通 MPay">澳門通 MPay</button>
+            <button class="channel-btn" data-channel="廣發錢包">廣發錢包</button>
+            <button class="channel-btn" data-channel="LusoPay">國際銀行 LusoPay</button>
+            <button class="channel-btn" data-channel="大豐豐付寶">大豐 豐付寶</button>
+            <button class="channel-btn" data-channel="南粵 UePay">南粵 UePay</button>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>分組</th>
+                        <th>日期</th>
+                        <th>渠道</th>
+                        <th>券1</th>
+                        <th>券2</th>
+                        <th>券3</th>
+                        <th>總額</th>
+                        <th>過期日</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="recordsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 每週記錄 Tab -->
+    <div id="weeklyTab" class="tab-content">
+        <div class="week-selector">
+            <h3>選擇星期</h3>
+            <div class="week-grid" id="weekGrid"></div>
+        </div>
+
+        <div class="week-input-section">
+            <h3 id="currentWeekTitle">第 1 週</h3>
+            <div id="weekInputs"></div>
+            <button class="save-week-btn" onclick="saveWeekRecord()">保存記錄</button>
+        </div>
+
+        <div class="week-history">
+            <div class="week-history-header">
+                <span>歷史記錄</span>
+            </div>
+            <div id="weekHistory"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2025 Eyesquare Ltd. X Nardo Lao
+    </div>
+
+    <script>
+        // ==================== 全域變量 ====================
+        let records = JSON.parse(localStorage.getItem('coupons')) || [];
+        let weeklyRecords = JSON.parse(localStorage.getItem('weeklyRecords')) || {};
+        let showOnlyValid = false;
+        let selectedWeek = 1;
+        let editingWeek = null;
+
+        const channels = [
+            '中銀 BOC', '工銀 ICBC', '支付寶 Alipay', '澳門通 MPay',
+            '廣發錢包', 'LusoPay', '大豐豐付寶', '南粵 UePay'
+        ];
+
+        const groupColors = ['#FF5733', '#33FF57', '#3357FF', '#F033FF', '#fbeb09'];
+
+        // ==================== Tab 切換 ====================
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tab === 'coupon') {
+                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
+                document.getElementById('couponTab').classList.add('active');
+            } else {
+                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
+                document.getElementById('weeklyTab').classList.add('active');
+                renderWeekGrid();
+                renderWeekInputs();
+                renderWeekHistory();
+            }
+        }
+
+        // ==================== 每週記錄功能 ====================
+        function renderWeekGrid() {
+            const grid = document.getElementById('weekGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= 52; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'week-btn' + (i === selectedWeek ? ' active' : '');
+                btn.textContent = 'W' + i;
+                btn.onclick = () => selectWeek(i);
+                grid.appendChild(btn);
+            }
+        }
+
+        function selectWeek(week) {
+            selectedWeek = week;
+            editingWeek = weeklyRecords[week] ? week : null;
+            document.getElementById('currentWeekTitle').textContent = '第 ' + week + ' 週';
+            renderWeekGrid();
+            renderWeekInputs();
+        }
+
+        function renderWeekInputs() {
+            const container = document.getElementById('weekInputs');
+            container.innerHTML = '';
+            
+            const data = editingWeek ? weeklyRecords[selectedWeek] : {};
+            
+            channels.forEach(channel => {
+                const row = document.createElement('div');
+                row.className = 'channel-input-row';
+                row.innerHTML = `
+                    <span class="channel-name">${channel}</span>
+                    <input type="number" class="channel-input" 
+                           id="input_${channel}" 
+                           value="${data[channel] || ''}" 
+                           placeholder="0"
+                           min="0">
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function saveWeekRecord() {
+            const weekData = {};
+            channels.forEach(channel => {
+                const input = document.getElementById('input_' + channel);
+                const value = parseInt(input.value) || 0;
+                if (value > 0) {
+                    weekData[channel] = value;
+                }
+            });
+            
+            if (Object.keys(weekData).length === 0) {
+                alert('請輸入至少一個渠道的金額');
+                return;
+            }
+            
+            weeklyRecords[selectedWeek] = weekData;
+            localStorage.setItem('weeklyRecords', JSON.stringify(weeklyRecords));
+            editingWeek = selectedWeek;
+            
+            renderWeekGrid();
+            renderWeekHistory();
+            alert('已保存第 ' + selectedWeek + ' 週記錄！');
+        }
+
+        function renderWeekHistory() {
+            const container = document.getElementById('weekHistory');
+            container.innerHTML = '';
+            
+            const weeks = Object.keys(weeklyRecords).map(Number).sort((a, b) => b - a);
+            
+            if (weeks.length === 0) {
+                container.innerHTML = '<div class="week-record-item"><span style="color:#888;">暫無記錄</span></div>';
+                return;
+            }
+            
+            weeks.forEach(week => {
+                const data = weeklyRecords[week];
+                const total = Object.values(data).reduce((sum, v) => sum + v, 0);
+                
+                const item = document.createElement('div');
+                item.className = 'week-record-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>第 ${week} 週</strong>
+                        <span style="color:#666; margin-left:10px;">
+                            ${Object.entries(data).map(([ch, val]) => `${ch}: $${val}`).join(' | ')}
+                        </span>
+                    </div>
+                    <div class="week-actions">
+                        <span class="week-total">$${total}</span>
+                        <button class="edit-btn" onclick="editWeek(${week})">編輯</button>
+                        <button class="delete-btn" onclick="deleteWeek(${week})">刪除</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function editWeek(week) {
+            selectWeek(week);
+        }
+
+        function deleteWeek(week) {
+            if (confirm('確定刪除第 ' + week + ' 週的記錄？')) {
+                delete weeklyRecords[week];
+                localStorage.setItem('weeklyRecords', JSON.stringify(weeklyRecords));
+                renderWeekHistory();
+                renderWeekGrid();
+            }
+        }
+
+        // ==================== 消費券功能（原有） ====================
+        function toggleChannels() {
+            const menu = document.getElementById('channelMenu');
+            menu.style.display = menu.style.display === 'grid' ? 'none' : 'grid';
+        }
+
+        document.querySelectorAll('.channel-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                createRecord(btn.dataset.channel);
+                toggleChannels();
+            });
+        });
+
+        function createRecord(channel) {
+            const today = new Date();
+            const expiry = getNextThursday();
+            const newRecord = {
+                id: Date.now(),
+                channel,
+                dateAdded: today.toISOString().split('T')[0],
+                coupons: [null, null, null],
+                total: 0,
+                expiry: expiry,
+                groupColor: groupColors[Math.floor(Math.random() * groupColors.length)]
+            };
+            records.push(newRecord);
+            saveData();
+            renderTable();
+            showCouponEditor(newRecord.id);
+        }
+
+        function showCouponEditor(recordId) {
+            const record = records.find(r => r.id === recordId);
+            const editor = document.createElement('div');
+            editor.className = 'edit-panel';
+            editor.innerHTML = `
+                <h3>${record.channel} - 設定消費券</h3>
+                ${record.coupons.map((val, i) => `
+                    <div class="coupon-section">
+                        <label>券 ${i + 1}：</label>
+                        <div>
+                            ${[0, 10, 20, 50, 100, 200].map(v => `
+                                <button onclick="updateCoupon(${recordId}, ${i}, ${v})"
+                                        class="${val === v ? 'selected-btn' : ''}">
+                                    ${v === 0 ? '無' : v}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+                <button style="margin-top:15px;padding:10px;width:100%;background:#2196F3;color:white;border:none;border-radius:5px;cursor:pointer;" 
+                        onclick="this.parentElement.remove()">完成</button>
+            `;
+            document.body.appendChild(editor);
+        }
+
+        function updateCoupon(recordId, index, value) {
+            const record = records.find(r => r.id === recordId);
+            record.coupons[index] = value === 0 ? null : value;
+            record.total = record.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0) * 3;
+            saveData();
+            renderTable();
+            showCouponEditor(recordId);
+        }
+
+        function getNextThursday() {
+            const date = new Date();
+            const daysUntilThursday = (4 - date.getDay() + 7) % 7 || 7;
+            date.setDate(date.getDate() + daysUntilThursday);
+            return date.toISOString().split('T')[0];
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('recordsBody');
+            const filtered = showOnlyValid 
+                ? records.filter(r => new Date(r.expiry) >= new Date())
+                : records;
+            
+            tbody.innerHTML = filtered.map(record => `
+                <tr>
+                    <td><span class="group-color" style="background:${record.groupColor}"></span></td>
+                    <td>${record.dateAdded}</td>
+                    <td>${record.channel}</td>
+                    ${record.coupons.map((v, i) => `
+                        <td onclick="editSingleCoupon(${record.id}, ${i})">
+                            ${v !== null ? v : '-'}
+                            <span class="edit-btn">✎</span>
+                        </td>
+                    `).join('')}
+                    <td><strong>$${record.total}</strong></td>
+                    <td>${record.expiry}</td>
+                    <td>
+                        <span class="edit-btn" onclick="deleteRecord(${record.id})">刪除</span>
+                    </td>
+                </tr>
+            `).join('');
+            
+            updateSummary();
+        }
+
+        function editSingleCoupon(recordId, index) {
+            const record = records.find(r => r.id === recordId);
+            const editor = document.createElement('div');
+            editor.className = 'edit-panel';
+            editor.innerHTML = `
+                <h3>券 ${index + 1}</h3>
+                <div class="coupon-section">
+                    ${[0, 10, 20, 50, 100, 200].map(v => `
+                        <button onclick="updateCoupon(${recordId}, ${index}, ${v}); this.parentElement.parentElement.parentElement.remove();"
+                                class="${record.coupons[index] === v ? 'selected-btn' : ''}">
+                            ${v === 0 ? '無' : v}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+            document.body.appendChild(editor);
+        }
+
+        function deleteRecord(id) {
+            if (confirm('確定刪除此記錄？')) {
+                records = records.filter(r => r.id !== id);
+                saveData();
+                renderTable();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('coupons', JSON.stringify(records));
+        }
+
+        function updateSummary() {
+            const activeRecords = records.filter(r => new Date(r.expiry) >= new Date());
+            const totalConsumption = activeRecords.reduce((sum, r) => sum + r.total, 0);
+            const remainingCoupons = activeRecords.reduce((sum, r) => {
+                return sum + r.coupons.filter(v => v !== null).reduce((s, v) => s + v, 0);
+            }, 0);
+            
+            document.getElementById('totalConsumption').textContent = '$' + totalConsumption;
+            document.getElementById('remainingCoupons').textContent = '$' + remainingCoupons;
+        }
+
+        function toggleFilter() {
+            showOnlyValid = !showOnlyValid;
+            const btn = document.getElementById('filterBtn');
+            btn.classList.toggle('active', showOnlyValid);
+            btn.textContent = showOnlyValid ? '顯示全部' : '顯示未到期';
+            renderTable();
+        }
+
+        function promptDeleteExpired() {
+            if (confirm('確定刪除所有已過期的記錄？')) {
+                records = records.filter(r => new Date(r.expiry) >= new Date());
+                saveData();
+                renderTable();
+            }
+        }
+
+        // ==================== 初始化 ====================
+        renderTable();
+    </script>
 </body>
 </html>
