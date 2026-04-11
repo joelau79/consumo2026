@@ -24,30 +24,54 @@
             gap: 10px;
         }
         .header-title { font-size: 1.5rem; color: #333; }
-        .tab-container {
+        
+        /* Week selector bar */
+        .week-bar {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .week-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .week-bar-header h3 { font-size: 1rem; color: #333; }
+        .week-selector {
             display: flex;
             gap: 5px;
-            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .week-btn {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
             background: white;
-            padding: 5px;
-            border-radius: 10px;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s;
+            min-width: 45px;
+            text-align: center;
+            font-size: 0.9rem;
         }
-        .tab-btn.active {
-            background: #2196F3;
-            color: white;
+        .week-btn:hover { background: #f0f0f0; }
+        .week-btn.active { background: #2196F3; color: white; border-color: #2196F3; }
+        .week-btn.has-data { font-weight: bold; }
+        .week-btn.has-data::after { content: ' ●'; color: #4CAF50; font-size: 0.7rem; }
+        
+        /* Current week info */
+        .current-week-info {
+            background: #e3f2fd;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .current-week-info .date-range { color: #1565C0; font-weight: bold; }
+        .current-week-info .week-total { color: #4CAF50; font-weight: bold; font-size: 1.1rem; }
         
         /* Summary styles */
         .summary-container {
@@ -82,103 +106,12 @@
         }
         th { background: #f8f8f8; font-weight: bold; }
         
-        /* Weekly record styles */
-        .week-selector {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        .week-selector h3 { margin-bottom: 10px; }
-        .week-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .week-nav-btn {
-            padding: 10px 20px;
-            background: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .week-nav-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        .week-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        .week-btn {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 5px;
-            cursor: pointer;
-            min-width: 80px;
-            text-align: center;
-        }
-        .week-btn:hover { background: #f0f0f0; }
-        .week-btn.active { background: #2196F3; color: white; border-color: #2196F3; }
-        .week-btn.has-data { font-weight: bold; }
-        .week-btn.has-data::after { content: ' ●'; color: #4CAF50; }
-        
-        .week-input-section {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-        .week-info {
-            background: #e3f2fd;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .week-info .date-range { color: #1565C0; font-weight: bold; }
-        .week-info .week-total { color: #4CAF50; font-weight: bold; font-size: 1.2rem; }
-        .channel-input-row {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .channel-input-row:last-child { border-bottom: none; }
-        .channel-name { flex: 1; font-weight: bold; }
-        .channel-input {
-            width: 100px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            text-align: right;
-        }
-        .save-week-btn {
-            width: 100%;
-            padding: 15px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-        .save-week-btn:hover { background: #45a049; }
-        
         /* Week history */
         .week-history {
             background: white;
             border-radius: 10px;
             overflow: hidden;
+            margin-top: 20px;
         }
         .week-history-header {
             background: #f8f8f8;
@@ -208,7 +141,7 @@
         .week-actions .edit-btn { background: #2196F3; color: white; }
         .week-actions .delete-btn { background: #e74c3c; color: white; }
         
-        /* Original coupon styles */
+        /* Coupon styles */
         .main-btn {
             background: #4CAF50;
             color: white;
@@ -291,10 +224,9 @@
         @media (max-width: 600px) {
             body { padding: 10px; }
             .header-title { font-size: 1.2rem; }
-            .tab-btn { padding: 10px; font-size: 0.9rem; }
             th, td { padding: 8px 4px; font-size: 0.85rem; }
             .channel-input { width: 80px; }
-            .week-btn { min-width: 60px; padding: 6px 8px; font-size: 0.9rem; }
+            .week-btn { min-width: 40px; padding: 6px 8px; font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -305,88 +237,78 @@
         </div>
     </div>
 
-    <div class="tab-container">
-        <button class="tab-btn active" onclick="switchTab('coupon')">消費券追蹤</button>
-        <button class="tab-btn" onclick="switchTab('weekly')">每週記錄</button>
-    </div>
-
-    <!-- 消費券追蹤 Tab -->
-    <div id="couponTab" class="tab-content active">
-        <div class="summary-container">
-            <div class="summary-item">
-                <span>總消費額</span>
-                <span class="summary-value" id="totalConsumption">$0</span>
-            </div>
-            <div class="summary-item">
-                <span>剩餘消費券金額</span>
-                <span class="summary-value" id="remainingCoupons">$0</span>
-            </div>
+    <!-- Week Selector Bar -->
+    <div class="week-bar">
+        <div class="week-bar-header">
+            <h3>選擇每週記錄</h3>
         </div>
-
-        <div class="filter-bar">
-            <button class="filter-btn active" onclick="toggleFilter()" id="filterBtn">顯示全部</button>
-            <button class="filter-btn" onclick="promptDeleteExpired()">刪除過期</button>
-        </div>
-
-        <button class="main-btn" onclick="toggleChannels()">＋ 快速新增</button>
-        <div class="channel-menu" id="channelMenu">
-            <button class="channel-btn" data-channel="中銀 BOC">中銀 BOC</button>
-            <button class="channel-btn" data-channel="工銀 ICBC">工銀 ICBC</button>
-            <button class="channel-btn" data-channel="支付寶 Alipay">支付寶 Alipay</button>
-            <button class="channel-btn" data-channel="澳門通 MPay">澳門通 MPay</button>
-            <button class="channel-btn" data-channel="廣發錢包">廣發錢包</button>
-            <button class="channel-btn" data-channel="LusoPay">國際銀行 LusoPay</button>
-            <button class="channel-btn" data-channel="大豐豐付寶">大豐 豐付寶</button>
-            <button class="channel-btn" data-channel="南粵 UePay">南粵 UePay</button>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>分組</th>
-                        <th>日期</th>
-                        <th>渠道</th>
-                        <th>券1</th>
-                        <th>券2</th>
-                        <th>券3</th>
-                        <th>總額</th>
-                        <th>過期日</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody id="recordsBody"></tbody>
-            </table>
+        <div class="week-selector" id="weekSelector"></div>
+        <div class="current-week-info">
+            <span class="date-range" id="currentWeekTitle">第 1 週 (4/12 - 4/18)</span>
+            <span class="week-total" id="weekDisplayTotal">$0</span>
         </div>
     </div>
 
-    <!-- 每週記錄 Tab -->
-    <div id="weeklyTab" class="tab-content">
-        <div class="week-selector">
-            <div class="week-nav">
-                <button class="week-nav-btn" onclick="prevWeeks()">◀ 上一頁</button>
-                <span id="pageIndicator">第 1-4 週</span>
-                <button class="week-nav-btn" onclick="nextWeeks()">下一頁 ▶</button>
-            </div>
-            <div class="week-grid" id="weekGrid"></div>
+    <!-- Summary -->
+    <div class="summary-container">
+        <div class="summary-item">
+            <span>本週總消費額</span>
+            <span class="summary-value" id="totalConsumption">$0</span>
         </div>
+        <div class="summary-item">
+            <span>本週剩餘消費券</span>
+            <span class="summary-value" id="remainingCoupons">$0</span>
+        </div>
+        <div class="summary-item">
+            <span>本週已輸入金額</span>
+            <span class="summary-value" id="weekInputTotal">$0</span>
+        </div>
+    </div>
 
-        <div class="week-input-section">
-            <div class="week-info">
-                <span class="date-range" id="currentWeekTitle">第 1 週 (4/12 - 4/18)</span>
-                <span class="week-total" id="weekDisplayTotal">$0</span>
-            </div>
-            <div id="weekInputs"></div>
-            <button class="save-week-btn" onclick="saveWeekRecord()">保存記錄</button>
-        </div>
+    <!-- Filter & Actions -->
+    <div class="filter-bar">
+        <button class="filter-btn" onclick="promptDeleteExpired()">刪除過期</button>
+    </div>
 
-        <div class="week-history">
-            <div class="week-history-header">
-                <span>歷史記錄</span>
-                <span id="historyCount">共 0 筆記錄</span>
-            </div>
-            <div id="weekHistory"></div>
+    <button class="main-btn" onclick="toggleChannels()">＋ 快速新增</button>
+    <div class="channel-menu" id="channelMenu">
+        <button class="channel-btn" data-channel="中銀 BOC">中銀 BOC</button>
+        <button class="channel-btn" data-channel="工銀 ICBC">工銀 ICBC</button>
+        <button class="channel-btn" data-channel="支付寶 Alipay">支付寶 Alipay</button>
+        <button class="channel-btn" data-channel="澳門通 MPay">澳門通 MPay</button>
+        <button class="channel-btn" data-channel="廣發錢包">廣發錢包</button>
+        <button class="channel-btn" data-channel="LusoPay">國際銀行 LusoPay</button>
+        <button class="channel-btn" data-channel="大豐豐付寶">大豐 豐付寶</button>
+        <button class="channel-btn" data-channel="南粵 UePay">南粵 UePay</button>
+    </div>
+
+    <!-- Records Table -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>分組</th>
+                    <th>日期</th>
+                    <th>渠道</th>
+                    <th>券1</th>
+                    <th>券2</th>
+                    <th>券3</th>
+                    <th>總額</th>
+                    <th>過期日</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="recordsBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Week History -->
+    <div class="week-history">
+        <div class="week-history-header">
+            <span>所有週記錄概覽</span>
+            <span id="historyCount">共 0 筆記錄</span>
         </div>
+        <div id="weekHistory"></div>
     </div>
 
     <div class="footer">
@@ -396,12 +318,9 @@
     <script>
         // ==================== 全域變量 ====================
         let records = JSON.parse(localStorage.getItem('coupons')) || [];
-        let weeklyRecords = JSON.parse(localStorage.getItem('weeklyRecords')) || {};
+        let weeklyInput = JSON.parse(localStorage.getItem('weeklyInput')) || {}; // 每週輸入的金額
         let showOnlyValid = false;
         let selectedWeek = 1;
-        let editingWeek = null;
-        let currentPage = 0;
-        const weeksPerPage = 8;
 
         // 起始日期：2026年4月12日（星期日）為第1週
         const START_DATE = new Date('2026-04-12');
@@ -420,9 +339,7 @@
             const endOfWeek = new Date(startOfWeek);
             endOfWeek.setDate(endOfWeek.getDate() + 6);
             
-            const formatDate = (d) => {
-                return `${d.getMonth() + 1}/${d.getDate()}`;
-            };
+            const formatDate = (d) => `${d.getMonth() + 1}/${d.getDate()}`;
             
             return {
                 start: startOfWeek,
@@ -440,194 +357,69 @@
             return Math.floor(diffDays / 7) + 1;
         }
 
-        function getTotalWeeks() {
-            const today = new Date();
-            const endOfYear = new Date('2026-12-31');
-            const diffTime = endOfYear - START_DATE;
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7)) + 1;
-        }
-
-        // ==================== Tab 切換 ====================
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        // ==================== 每週選擇 ====================
+        function renderWeekSelector() {
+            const selector = document.getElementById('weekSelector');
+            selector.innerHTML = '';
             
-            if (tab === 'coupon') {
-                document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
-                document.getElementById('couponTab').classList.add('active');
-            } else {
-                document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
-                document.getElementById('weeklyTab').classList.add('active');
-                if (selectedWeek === 1 && getCurrentWeek() > 0) {
-                    selectedWeek = Math.min(getCurrentWeek(), getTotalWeeks());
-                }
-                renderWeekGrid();
-                selectWeek(selectedWeek);
-                renderWeekHistory();
-            }
-        }
-
-        // ==================== 每週記錄功能 ====================
-        function renderWeekGrid() {
-            const grid = document.getElementById('weekGrid');
-            grid.innerHTML = '';
-            
-            const totalWeeks = getTotalWeeks();
-            const startWeek = currentPage * weeksPerPage + 1;
-            const endWeek = Math.min(startWeek + weeksPerPage - 1, totalWeeks);
-            
-            document.getElementById('pageIndicator').textContent = `第 ${startWeek} - ${endWeek} 週`;
-            
-            for (let i = startWeek; i <= endWeek; i++) {
+            for (let i = 1; i <= 10; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'week-btn' + (i === selectedWeek ? ' active' : '');
-                if (weeklyRecords[i]) btn.classList.add('has-data');
+                if (weeklyInput[i]) btn.classList.add('has-data');
                 btn.textContent = 'W' + i;
                 btn.onclick = () => selectWeek(i);
-                grid.appendChild(btn);
+                selector.appendChild(btn);
             }
-        }
-
-        function prevWeeks() {
-            if (currentPage > 0) {
-                currentPage--;
-                renderWeekGrid();
-            }
-        }
-
-        function nextWeeks() {
-            const totalWeeks = getTotalWeeks();
-            const maxPage = Math.floor((totalWeeks - 1) / weeksPerPage);
-            if (currentPage < maxPage) {
-                currentPage++;
-                renderWeekGrid();
-            }
+            
+            // 設置當前週為 active
+            selectedWeek = getCurrentWeek();
+            if (selectedWeek > 10) selectedWeek = 10;
+            
+            const buttons = selector.querySelectorAll('.week-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.textContent.replace('W','')) === selectedWeek) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            updateWeekDisplay();
         }
 
         function selectWeek(week) {
             selectedWeek = week;
-            editingWeek = weeklyRecords[week] ? week : null;
             
-            const weekInfo = getWeekInfo(week);
-            document.getElementById('currentWeekTitle').textContent = `第 ${week} 週 (${weekInfo.label})`;
-            
-            renderWeekGrid();
-            renderWeekInputs();
-            updateWeekDisplayTotal();
-        }
-
-        function updateWeekDisplayTotal() {
-            const data = weeklyRecords[selectedWeek] || {};
-            const total = Object.values(data).reduce((sum, v) => sum + v, 0);
-            document.getElementById('weekDisplayTotal').textContent = total > 0 ? `$${total}` : '$0';
-        }
-
-        function renderWeekInputs() {
-            const container = document.getElementById('weekInputs');
-            container.innerHTML = '';
-            
-            const data = editingWeek ? weeklyRecords[selectedWeek] : {};
-            
-            channels.forEach(channel => {
-                const row = document.createElement('div');
-                row.className = 'channel-input-row';
-                row.innerHTML = `
-                    <span class="channel-name">${channel}</span>
-                    <input type="number" class="channel-input" 
-                           id="input_${channel}" 
-                           value="${data[channel] || ''}" 
-                           placeholder="0"
-                           min="0"
-                           onchange="updateWeekDisplayTotal()">
-                `;
-                container.appendChild(row);
-            });
-            
-            updateWeekDisplayTotal();
-        }
-
-        function saveWeekRecord() {
-            const weekData = {};
-            channels.forEach(channel => {
-                const input = document.getElementById('input_' + channel);
-                const value = parseInt(input.value) || 0;
-                if (value > 0) {
-                    weekData[channel] = value;
+            const buttons = document.querySelectorAll('.week-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.textContent.replace('W','')) === week) {
+                    btn.classList.add('active');
                 }
             });
             
-            weeklyRecords[selectedWeek] = weekData;
-            localStorage.setItem('weeklyRecords', JSON.stringify(weeklyRecords));
-            editingWeek = selectedWeek;
-            
-            renderWeekGrid();
-            renderWeekHistory();
-            updateWeekDisplayTotal();
-            alert('已保存第 ' + selectedWeek + ' 週記錄！');
+            updateWeekDisplay();
+            renderTable();
         }
 
-        function renderWeekHistory() {
-            const container = document.getElementById('weekHistory');
-            container.innerHTML = '';
+        function updateWeekDisplay() {
+            const weekInfo = getWeekInfo(selectedWeek);
+            document.getElementById('currentWeekTitle').textContent = `第 ${selectedWeek} 週 (${weekInfo.label})`;
             
-            const weeks = Object.keys(weeklyRecords).map(Number).sort((a, b) => b - a);
+            // 本週已輸入金額
+            const inputData = weeklyInput[selectedWeek] || {};
+            const inputTotal = Object.values(inputData).reduce((sum, v) => sum + v, 0);
+            document.getElementById('weekInputTotal').textContent = '$' + inputTotal;
             
-            document.getElementById('historyCount').textContent = `共 ${weeks.length} 筆記錄`;
-            
-            if (weeks.length === 0) {
-                container.innerHTML = '<div class="week-record-item"><span style="color:#888;">暫無記錄</span></div>';
-                return;
-            }
-            
-            weeks.forEach(week => {
-                const data = weeklyRecords[week];
-                const total = Object.values(data).reduce((sum, v) => sum + v, 0);
-                const weekInfo = getWeekInfo(week);
-                
-                const item = document.createElement('div');
-                item.className = 'week-record-item';
-                item.innerHTML = `
-                    <div>
-                        <strong>第 ${week} 週</strong>
-                        <span style="color:#888; margin-left:5px;">(${weekInfo.label})</span>
-                        <span style="color:#666; margin-left:10px;">
-                            ${Object.entries(data).map(([ch, val]) => `${ch}: $${val}`).join(' | ')}
-                        </span>
-                    </div>
-                    <div class="week-actions">
-                        <span class="week-total">$${total}</span>
-                        <button class="edit-btn" onclick="editWeek(${week})">編輯</button>
-                        <button class="delete-btn" onclick="deleteWeek(${week})">刪除</button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
+            updateSummary();
         }
 
-        function editWeek(week) {
-            const weekInfo = getWeekInfo(week);
-            selectedWeek = week;
-            editingWeek = week;
-            document.getElementById('currentWeekTitle').textContent = `第 ${week} 週 (${weekInfo.label})`;
-            currentPage = Math.floor((week - 1) / weeksPerPage);
-            renderWeekGrid();
-            renderWeekInputs();
+        // ==================== 每週輸入功能 ====================
+        function saveWeeklyInput() {
+            // 這個功能可以讓用戶直接輸入本週收到的消費券金額
+            // 但目前我們是透過記錄消費來追蹤
         }
 
-        function deleteWeek(week) {
-            if (confirm('確定刪除第 ' + week + ' 週的記錄？')) {
-                delete weeklyRecords[week];
-                localStorage.setItem('weeklyRecords', JSON.stringify(weeklyRecords));
-                renderWeekHistory();
-                renderWeekGrid();
-                if (selectedWeek === week) {
-                    editingWeek = null;
-                    renderWeekInputs();
-                }
-            }
-        }
-
-        // ==================== 消費券功能（原有） ====================
+        // ==================== 消費券記錄功能 ====================
         function toggleChannels() {
             const menu = document.getElementById('channelMenu');
             menu.style.display = menu.style.display === 'grid' ? 'none' : 'grid';
@@ -647,6 +439,7 @@
                 id: Date.now(),
                 channel,
                 dateAdded: today.toISOString().split('T')[0],
+                weekNum: selectedWeek, // 記錄所屬週數
                 coupons: [null, null, null],
                 total: 0,
                 expiry: expiry,
@@ -655,6 +448,7 @@
             records.push(newRecord);
             saveData();
             renderTable();
+            renderWeekHistory();
             showCouponEditor(newRecord.id);
         }
 
@@ -664,6 +458,7 @@
             editor.className = 'edit-panel';
             editor.innerHTML = `
                 <h3>${record.channel} - 設定消費券</h3>
+                <p style="color:#666;font-size:0.9rem;margin-bottom:10px;">第 ${record.weekNum} 週</p>
                 ${record.coupons.map((val, i) => `
                     <div class="coupon-section">
                         <label>券 ${i + 1}：</label>
@@ -689,6 +484,7 @@
             record.total = record.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0) * 3;
             saveData();
             renderTable();
+            updateSummary();
             showCouponEditor(recordId);
         }
 
@@ -701,28 +497,32 @@
 
         function renderTable() {
             const tbody = document.getElementById('recordsBody');
-            const filtered = showOnlyValid 
-                ? records.filter(r => new Date(r.expiry) >= new Date())
-                : records;
             
-            tbody.innerHTML = filtered.map(record => `
-                <tr>
-                    <td><span class="group-color" style="background:${record.groupColor}"></span></td>
-                    <td>${record.dateAdded}</td>
-                    <td>${record.channel}</td>
-                    ${record.coupons.map((v, i) => `
-                        <td onclick="editSingleCoupon(${record.id}, ${i})">
-                            ${v !== null ? v : '-'}
-                            <span class="edit-btn">✎</span>
+            // 只顯示本週的記錄
+            const weekRecords = records.filter(r => r.weekNum === selectedWeek);
+            
+            if (weekRecords.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="color:#888;padding:20px;">本週暫無記錄，點擊「快速新增」添加</td></tr>`;
+            } else {
+                tbody.innerHTML = weekRecords.map(record => `
+                    <tr>
+                        <td><span class="group-color" style="background:${record.groupColor}"></span></td>
+                        <td>${record.dateAdded}</td>
+                        <td>${record.channel}</td>
+                        ${record.coupons.map((v, i) => `
+                            <td onclick="editSingleCoupon(${record.id}, ${i})">
+                                ${v !== null ? v : '-'}
+                                <span class="edit-btn">✎</span>
+                            </td>
+                        `).join('')}
+                        <td><strong>$${record.total}</strong></td>
+                        <td>${record.expiry}</td>
+                        <td>
+                            <span class="edit-btn" onclick="deleteRecord(${record.id})">刪除</span>
                         </td>
-                    `).join('')}
-                    <td><strong>$${record.total}</strong></td>
-                    <td>${record.expiry}</td>
-                    <td>
-                        <span class="edit-btn" onclick="deleteRecord(${record.id})">刪除</span>
-                    </td>
-                </tr>
-            `).join('');
+                    </tr>
+                `).join('');
+            }
             
             updateSummary();
         }
@@ -733,6 +533,7 @@
             editor.className = 'edit-panel';
             editor.innerHTML = `
                 <h3>券 ${index + 1}</h3>
+                <p style="color:#666;font-size:0.9rem;margin-bottom:10px;">第 ${record.weekNum} 週</p>
                 <div class="coupon-section">
                     ${[0, 10, 20, 50, 100, 200].map(v => `
                         <button onclick="updateCoupon(${recordId}, ${index}, ${v}); this.parentElement.parentElement.parentElement.remove();"
@@ -750,6 +551,7 @@
                 records = records.filter(r => r.id !== id);
                 saveData();
                 renderTable();
+                renderWeekHistory();
             }
         }
 
@@ -758,22 +560,71 @@
         }
 
         function updateSummary() {
-            const activeRecords = records.filter(r => new Date(r.expiry) >= new Date());
-            const totalConsumption = activeRecords.reduce((sum, r) => sum + r.total, 0);
-            const remainingCoupons = activeRecords.reduce((sum, r) => {
+            // 本週記錄
+            const weekRecords = records.filter(r => r.weekNum === selectedWeek);
+            const totalConsumption = weekRecords.reduce((sum, r) => sum + r.total, 0);
+            const remainingCoupons = weekRecords.reduce((sum, r) => {
                 return sum + r.coupons.filter(v => v !== null).reduce((s, v) => s + v, 0);
             }, 0);
             
             document.getElementById('totalConsumption').textContent = '$' + totalConsumption;
             document.getElementById('remainingCoupons').textContent = '$' + remainingCoupons;
+            
+            // 更新週按鈕狀態
+            const weekRecords2 = records.filter(r => r.weekNum === selectedWeek);
+            const inputTotal = weekRecords2.reduce((sum, r) => {
+                return sum + r.coupons.filter(v => v !== null).reduce((s, v) => s + v, 0);
+            }, 0);
+            document.getElementById('weekInputTotal').textContent = '$' + inputTotal;
         }
 
-        function toggleFilter() {
-            showOnlyValid = !showOnlyValid;
-            const btn = document.getElementById('filterBtn');
-            btn.classList.toggle('active', showOnlyValid);
-            btn.textContent = showOnlyValid ? '顯示全部' : '顯示未到期';
-            renderTable();
+        function renderWeekHistory() {
+            const container = document.getElementById('weekHistory');
+            container.innerHTML = '';
+            
+            // 統計每週有記錄的週
+            const weeksWithRecords = {};
+            records.forEach(r => {
+                if (!weeksWithRecords[r.weekNum]) {
+                    weeksWithRecords[r.weekNum] = { count: 0, total: 0 };
+                }
+                weeksWithRecords[r.weekNum].count++;
+                weeksWithRecords[r.weekNum].total += r.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0);
+            });
+            
+            const weeks = Object.keys(weeksWithRecords).map(Number).sort((a, b) => b - a);
+            
+            document.getElementById('historyCount').textContent = `共 ${weeks.length} 週有記錄`;
+            
+            if (weeks.length === 0) {
+                container.innerHTML = '<div class="week-record-item"><span style="color:#888;">暫無記錄</span></div>';
+                return;
+            }
+            
+            weeks.forEach(week => {
+                const info = weeksWithRecords[week];
+                const weekInfo = getWeekInfo(week);
+                
+                const item = document.createElement('div');
+                item.className = 'week-record-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>第 ${week} 週</strong>
+                        <span style="color:#888; margin-left:5px;">(${weekInfo.label})</span>
+                        <span style="color:#666; margin-left:10px;">${info.count}筆記錄</span>
+                    </div>
+                    <div class="week-actions">
+                        <span class="week-total">$${info.total}</span>
+                        <button class="edit-btn" onclick="goToWeek(${week})">查看</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function goToWeek(week) {
+            selectWeek(week);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function promptDeleteExpired() {
@@ -781,11 +632,14 @@
                 records = records.filter(r => new Date(r.expiry) >= new Date());
                 saveData();
                 renderTable();
+                renderWeekHistory();
             }
         }
 
         // ==================== 初始化 ====================
+        renderWeekSelector();
         renderTable();
+        renderWeekHistory();
     </script>
 </body>
 </html>
