@@ -294,6 +294,7 @@
                     <th>券3</th>
                     <th>消費額</th>
                     <th>過期日</th>
+                    <th>操作</th>
 
                 </tr>
             </thead>
@@ -515,6 +516,9 @@
                         `).join('')}
                         <td><strong>$${record.total}</strong></td>
                         <td>${record.expiry}</td>
+                        <td>
+                            <span class="edit-btn" onclick="deleteRecord(${record.id})" style="color:red;">刪除</span>
+                        </td>
                     </tr>
                 `).join('');
             }
@@ -552,6 +556,15 @@
         function closeEditor(id) {
             const editor = document.getElementById('editor-' + id);
             if (editor) editor.remove();
+        }
+
+        function deleteRecord(id) {
+            if (confirm('確定刪除此記錄？')) {
+                records = records.filter(r => r.id !== id);
+                saveData();
+                renderTable();
+                renderWeekHistory();
+            }
         }
 
         function saveData() {
