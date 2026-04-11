@@ -508,7 +508,7 @@
                         <td>${record.dateAdded}</td>
                         <td>${record.channel}</td>
                         ${record.coupons.map((v, i) => `
-                            <td onclick="editSingleCoupon(${record.id}, ${i})">
+                            <td onclick="showCouponEditor(${record.id})">
                                 ${v !== null ? v : '-'}
                                 <span class="edit-btn">✎</span>
                             </td>
