@@ -470,6 +470,7 @@
             const editor = document.createElement('div');
             editor.className = 'edit-panel';
             editor.innerHTML = `
+                <div style="position:relative;"><span onclick="this.parentElement.parentElement.remove();" style="position:absolute;top:-5px;right:0;font-size:24px;cursor:pointer;color:#888;">&times;</span></div>
                 <h3>${record.channel} - 設定消費券</h3>
                 <p style="color:#666;font-size:0.9rem;margin-bottom:10px;">第 ${record.weekNum} 週</p>
                 ${record.coupons.map((val, i) => `
