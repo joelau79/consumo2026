@@ -479,9 +479,15 @@
                     </div>
                 `).join('')}
                 <button style="margin-top:15px;padding:10px;width:100%;background:#2196F3;color:white;border:none;border-radius:5px;cursor:pointer;" 
-                        onclick="this.parentElement.remove()">完成</button>
+                        onclick="saveAndClose(this.parentElement)">完成</button>
             `;
             document.body.appendChild(editor);
+        }
+
+        function saveAndClose(editor) {
+            saveData();
+            renderTable();
+            editor.remove();
         }
 
         function updateCoupon(recordId, index, value) {
@@ -493,6 +499,12 @@
             updateSummary();
             // Reopen editor to update button states
             showCouponEditor(recordId);
+        }
+
+        function saveAndClose(editor) {
+            saveData();
+            renderTable();
+            editor.remove();
         }
 
         function getNextThursday() {
