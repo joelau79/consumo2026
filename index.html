@@ -464,7 +464,7 @@
                         <label>券 ${i + 1}：</label>
                         <div>
                             ${[0, 10, 20, 50, 100, 200].map(v => `
-                                <button onclick="updateCoupon(${recordId}, ${i}, ${v}); this.parentElement.parentElement.parentElement.remove();"
+                                <button onclick="updateCoupon(${recordId}, ${i}, ${v})"
                                         class="${val === v ? 'selected-btn' : ''}">
                                     ${v === 0 ? '無' : v}
                                 </button>
