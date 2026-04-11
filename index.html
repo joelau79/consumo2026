@@ -256,10 +256,6 @@
             <span class="summary-value" id="totalConsumption">$0</span>
         </div>
         <div class="summary-item">
-            <span>本週剩餘消費券</span>
-            <span class="summary-value" id="remainingCoupons">$0</span>
-        </div>
-        <div class="summary-item">
             <span>本週已輸入金額</span>
             <span class="summary-value" id="weekInputTotal">$0</span>
         </div>
@@ -295,7 +291,7 @@
                     <th>券3</th>
                     <th>消費額</th>
                     <th>過期日</th>
-                    <th>操作</th>
+
                 </tr>
             </thead>
             <tbody id="recordsBody"></tbody>
@@ -516,9 +512,6 @@
                         `).join('')}
                         <td><strong>$${record.total}</strong></td>
                         <td>${record.expiry}</td>
-                        <td>
-                            <span class="edit-btn" onclick="deleteRecord(${record.id})">刪除</span>
-                        </td>
                     </tr>
                 `).join('');
             }
@@ -558,15 +551,6 @@
             if (editor) editor.remove();
         }
 
-        function deleteRecord(id) {
-            if (confirm('確定刪除此記錄？')) {
-                records = records.filter(r => r.id !== id);
-                saveData();
-                renderTable();
-                renderWeekHistory();
-            }
-        }
-
         function saveData() {
             localStorage.setItem('coupons', JSON.stringify(records));
         }
@@ -575,12 +559,8 @@
             // 本週記錄
             const weekRecords = records.filter(r => r.weekNum === selectedWeek);
             const totalConsumption = weekRecords.reduce((sum, r) => sum + r.total, 0);
-            const remainingCoupons = weekRecords.reduce((sum, r) => {
-                return sum + r.coupons.filter(v => v !== null).reduce((s, v) => s + v, 0);
-            }, 0);
             
             document.getElementById('totalConsumption').textContent = '$' + totalConsumption;
-            document.getElementById('remainingCoupons').textContent = '$' + remainingCoupons;
             
             // 更新週按鈕狀態
             const weekRecords2 = records.filter(r => r.weekNum === selectedWeek);
