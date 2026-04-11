@@ -520,9 +520,9 @@
             // Store selection in pending, don't save yet
             pendingSelections[recordId][index] = value === 0 ? null : value;
             
-            // Clear ALL selected buttons in this coupon row first
-            const allButtons = document.querySelectorAll('.edit-panel button');
-            allButtons.forEach(b => b.classList.remove('selected-btn'));
+            // Clear only buttons in this coupon row (same recordId and index)
+            const buttons = document.querySelectorAll(`.edit-panel button[onclick^="selectCoupon(${recordId}, ${index},"]`);
+            buttons.forEach(b => b.classList.remove('selected-btn'));
             
             // Then set the clicked button as selected
             btn.classList.add('selected-btn');
