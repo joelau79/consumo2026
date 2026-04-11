@@ -267,7 +267,7 @@
 
     <!-- Filter & Actions -->
     <div class="filter-bar">
-        <button class="filter-btn" onclick="promptDeleteExpired()">刪除過期</button>
+
     </div>
 
     <button class="main-btn" onclick="toggleChannels()">＋ 快速新增</button>
@@ -639,14 +639,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function promptDeleteExpired() {
-            if (confirm('確定刪除所有已過期的記錄？')) {
-                records = records.filter(r => new Date(r.expiry) >= new Date());
-                saveData();
-                renderTable();
-                renderWeekHistory();
-            }
-        }
+
 
         // ==================== 初始化 ====================
         renderWeekSelector();
