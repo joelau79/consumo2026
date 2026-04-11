@@ -227,6 +227,18 @@
             th, td { padding: 8px 4px; font-size: 0.85rem; }
             .channel-input { width: 80px; }
             .week-btn { min-width: 40px; padding: 6px 8px; font-size: 0.8rem; }
+            .coupon-cell { white-space: nowrap; }
+            .coupon-btn {
+                padding: 4px 6px;
+                margin: 2px;
+                border: 1px solid #ddd;
+                background: white;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.75rem;
+            }
+            .coupon-btn:hover { background: #e0e0e0; }
+            .coupon-btn.selected { background: #2196F3; color: white; border-color: #2196F3; }
         }
     </style>
 </head>
@@ -508,9 +520,13 @@
                         <td>${record.dateAdded}</td>
                         <td>${record.channel}</td>
                         ${record.coupons.map((v, i) => `
-                            <td onclick="editSingleCoupon(${record.id}, ${i})">
-                                ${v !== null ? v : '-'}
-                                <span class="edit-btn">✎</span>
+                            <td class="coupon-cell">
+                                ${[0, 10, 20, 50, 100, 200].map(val => `
+                                    <button class="coupon-btn ${record.coupons[i] === val ? 'selected' : ''}" 
+                                            onclick="updateCoupon(${record.id}, ${i}, ${val})">
+                                        ${val === 0 ? '無' : val}
+                                    </button>
+                                `).join('')}
                             </td>
                         `).join('')}
                         <td><strong>$${record.total}</strong></td>
