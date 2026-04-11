@@ -240,7 +240,10 @@
     <!-- Week Selector Bar -->
     <div class="week-bar">
         <div class="week-bar-header">
-            <h3>選擇每週記錄</h3>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <h3>選擇每週記錄</h3>
+                <span id="currentDateTime" style="font-weight:normal;color:#666;"></span>
+            </div>
         </div>
         <div class="week-selector" id="weekSelector"></div>
         <div class="current-week-info">
@@ -308,7 +311,7 @@
     </div>
 
     <div class="footer">
-        © 2025 Eyesquare Ltd. X Nardo Lao
+
     </div>
 
     <script>
@@ -622,9 +625,23 @@
 
 
         // ==================== 初始化 ====================
-        renderWeekSelector();
-        renderTable();
-        renderWeekHistory();
+        // 初始化
+        function init() {
+            updateCurrentDate();
+            renderWeekSelector();
+            renderTable();
+            renderWeekHistory();
+        }
+        function updateCurrentDate() {
+            const now = new Date();
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const dayName = days[now.getDay()];
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const date = String(now.getDate()).padStart(2, '0');
+            const title = document.getElementById('currentDateTime');
+            if (title) title.textContent = `${month}/${date} ${dayName}`;
+        }
+        init();
     </script>
 </body>
 </html>
