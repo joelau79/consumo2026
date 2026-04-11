@@ -433,6 +433,12 @@
         });
 
         function createRecord(channel) {
+            // 檢查是否已存在相同渠道且相同週數
+            const exists = records.some(r => r.channel === channel && r.weekNum === selectedWeek);
+            if (exists) {
+                alert('此渠道本週已存在！');
+                return;
+            }
             const today = new Date();
             const expiry = getNextThursday();
             const newRecord = {
@@ -485,6 +491,8 @@
             saveData();
             renderTable();
             updateSummary();
+            // Reopen editor to update button states
+            showCouponEditor(recordId);
         }
 
         function getNextThursday() {
