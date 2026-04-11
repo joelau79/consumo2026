@@ -317,6 +317,7 @@
 
     <script>
         // ==================== 全域變量 ====================
+        let pendingSelections = {};
         let records = JSON.parse(localStorage.getItem('coupons')) || [];
         let weeklyInput = JSON.parse(localStorage.getItem('weeklyInput')) || {}; // 每週輸入的金額
         let showOnlyValid = false;
@@ -459,7 +460,14 @@
         }
 
         function showCouponEditor(recordId) {
+            // Remove existing editor
+            const existing = document.querySelector('.edit-panel');
+            if (existing) existing.remove();
+            
             const record = records.find(r => r.id === recordId);
+            // Initialize pending selections
+            pendingSelections[recordId] = [...record.coupons];
+            
             const editor = document.createElement('div');
             editor.className = 'edit-panel';
             editor.innerHTML = `
@@ -470,8 +478,8 @@
                         <label>券 ${i + 1}：</label>
                         <div>
                             ${[0, 10, 20, 50, 100, 200].map(v => `
-                                <button onclick="updateCoupon(${recordId}, ${i}, ${v})"
-                                        class="${(val === v) || (val === null && v === 0) ? 'selected-btn' : ''}">
+                                <button onclick="selectCoupon(${recordId}, ${i}, ${v}, this)"
+                                        class="${(pendingSelections[recordId][i] === v) || (pendingSelections[recordId][i] === null && v === 0) ? 'selected-btn' : ''}">
                                     ${v === 0 ? '無' : v}
                                 </button>
                             `).join('')}
@@ -485,8 +493,35 @@
         }
 
         function saveAndClose(editor) {
+            const recordId = parseInt(editor.querySelector('button').getAttribute('onclick').match(/\d+/g)[0]);
+            
+            // Apply pending selections to record
+            if (pendingSelections[recordId]) {
+                const record = records.find(r => r.id === recordId);
+                if (record) {
+                    for (let i = 0; i < 3; i++) {
+                        if (pendingSelections[recordId][i] !== undefined) {
+                            record.coupons[i] = pendingSelections[recordId][i];
+                        }
+                    }
+                    record.total = record.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0) * 3;
+                }
+                delete pendingSelections[recordId];
+            }
+            
             saveData();
+            renderTable();
             editor.remove();
+        }
+
+        function selectCoupon(recordId, index, value, btn) {
+            // Store selection in pending, don't save yet
+            pendingSelections[recordId][index] = value === 0 ? null : value;
+            
+            // Only update button visual state
+            const buttons = document.querySelectorAll(`button[onclick^="selectCoupon(${recordId}, ${index},"]`);
+            buttons.forEach(b => b.classList.remove('selected-btn'));
+            btn.classList.add('selected-btn');
         }
 
         function updateCoupon(recordId, index, value) {
@@ -494,20 +529,8 @@
             record.coupons[index] = value === 0 ? null : value;
             record.total = record.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0) * 3;
             saveData();
-            // 直接更新單元格，不重新渲染整個表格
-            const rows = document.querySelectorAll('#recordsBody tr');
-            rows.forEach(row => {
-                if (row.querySelector(`[onclick="showCouponEditor(${recordId})"]`)) {
-                    const tds = row.querySelectorAll('td');
-                    record.coupons.forEach((v, i) => {
-                        if (tds[i + 2]) tds[i + 2].innerHTML = `${v !== null ? v : '-'}<span class="edit-btn">✎</span>`;
-                    });
-                    if (tds[5]) tds[5].innerHTML = `<strong>$${record.total}</strong>`;
-                }
-            });
+            renderTable();
             updateSummary();
-            // Reopen editor to update button states
-            showCouponEditor(recordId);
         }
 
         function getNextThursday() {
