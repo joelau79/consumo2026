@@ -511,6 +511,8 @@
             
             saveData();
             renderTable();
+            renderWeekHistory();
+            refreshWeekHistory();
             editor.remove();
         }
 
@@ -679,6 +681,30 @@
         function goToWeek(week) {
             selectWeek(week);
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function refreshWeekHistory() {
+            // Fast update: just update totals without full re-render
+            const weeksWithRecords = {};
+            records.forEach(r => {
+                if (!weeksWithRecords[r.weekNum]) {
+                    weeksWithRecords[r.weekNum] = { count: 0, total: 0 };
+                }
+                weeksWithRecords[r.weekNum].count++;
+                weeksWithRecords[r.weekNum].total += r.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0);
+            });
+            
+            // Update existing items
+            document.querySelectorAll('.week-record-item').forEach(item => {
+                const weekText = item.querySelector('strong')?.textContent;
+                if (weekText) {
+                    const week = parseInt(weekText.replace('第', '').replace('週', ''));
+                    if (weeksWithRecords[week]) {
+                        const totalSpan = item.querySelector('.week-total');
+                        if (totalSpan) totalSpan.textContent = '$' + weeksWithRecords[week].total;
+                    }
+                }
+            });
         }
 
 
