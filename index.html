@@ -486,7 +486,6 @@
 
         function saveAndClose(editor) {
             saveData();
-            renderTable();
             editor.remove();
         }
 
@@ -499,12 +498,6 @@
             updateSummary();
             // Reopen editor to update button states
             showCouponEditor(recordId);
-        }
-
-        function saveAndClose(editor) {
-            saveData();
-            renderTable();
-            editor.remove();
         }
 
         function getNextThursday() {
