@@ -494,7 +494,17 @@
             record.coupons[index] = value === 0 ? null : value;
             record.total = record.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0) * 3;
             saveData();
-            renderTable();
+            // 直接更新單元格，不重新渲染整個表格
+            const rows = document.querySelectorAll('#recordsBody tr');
+            rows.forEach(row => {
+                if (row.querySelector(`[onclick="showCouponEditor(${recordId})"]`)) {
+                    const tds = row.querySelectorAll('td');
+                    record.coupons.forEach((v, i) => {
+                        if (tds[i + 2]) tds[i + 2].innerHTML = `${v !== null ? v : '-'}<span class="edit-btn">✎</span>`;
+                    });
+                    if (tds[5]) tds[5].innerHTML = `<strong>$${record.total}</strong>`;
+                }
+            });
             updateSummary();
             // Reopen editor to update button states
             showCouponEditor(recordId);
