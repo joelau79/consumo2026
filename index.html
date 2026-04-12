@@ -285,7 +285,6 @@
         <table>
             <thead>
                 <tr>
-                    <th>分組</th>
                     <th>日期</th>
                     <th>渠道</th>
                     <th>券1</th>
@@ -294,7 +293,6 @@
                     <th>消費額</th>
                     <th>過期日</th>
                     <th>操作</th>
-
                 </tr>
             </thead>
             <tbody id="recordsBody"></tbody>
@@ -472,8 +470,10 @@
             if (existing) existing.remove();
             
             const record = records.find(r => r.id === recordId);
-            // Initialize pending selections
+            // Initialize pending selections - copy of original values
             pendingSelections[recordId] = [...record.coupons];
+            // Clear modification tracking for this record
+            modifiedCouponKeys[recordId] = {};
             
             const editor = document.createElement('div');
             editor.className = 'edit-panel';
@@ -488,7 +488,7 @@
                         <div>
                             ${[0, 10, 20, 50, 100, 200].map(v => `
                                 <button onclick="selectCoupon(${recordId}, ${i}, ${v}, this)"
-                                        class="${(pendingSelections[recordId][i] === v) || (pendingSelections[recordId][i] === null && v === 0) ? 'selected-btn' : ''}">
+                                        class="${((pendingSelections[recordId][i] ?? val) === v) || ((pendingSelections[recordId][i] ?? val) === null && v === 0) ? 'selected-btn' : ''}">
                                     ${v === 0 ? '無' : v}
                                 </button>
                             `).join('')}
@@ -509,15 +509,20 @@
                 const record = records.find(r => r.id === recordId);
                 if (record) {
                     for (let i = 0; i < 3; i++) {
-                        if (pendingSelections[recordId][i] !== undefined) {
+                        // 只有被用戶修改過的券才更新
+                        if (modifiedCouponKeys[recordId] && modifiedCouponKeys[recordId][i]) {
                             record.coupons[i] = pendingSelections[recordId][i];
+                            // 當金額被設定時，checkbox自動變成已點擊
+                            checkboxStates[recordId + '-' + i] = true;
                         }
                     }
                     record.total = record.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0) * 3;
                 }
                 delete pendingSelections[recordId];
+                delete modifiedCouponKeys[recordId];
             }
             
+            localStorage.setItem('checkboxStates', JSON.stringify(checkboxStates));
             saveData();
             renderTable();
             renderWeekHistory();
@@ -528,6 +533,8 @@
         function selectCoupon(recordId, index, value, btn) {
             // Store selection in pending, don't save yet
             pendingSelections[recordId][index] = value === 0 ? null : value;
+            // Mark this coupon as modified
+            modifiedCouponKeys[recordId][index] = true;
             
             // Clear only buttons in this coupon row (same recordId and index)
             const buttons = document.querySelectorAll(`.edit-panel button[onclick^="selectCoupon(${recordId}, ${index},"]`);
@@ -553,19 +560,18 @@
             const weekRecords = records.filter(r => r.weekNum === selectedWeek);
             
             if (weekRecords.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" style="color:#888;padding:20px;">本週暫無記錄，點擊「快速新增」添加</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="color:#888;padding:20px;">本週暫無記錄，點擊「快速新增」添加</td></tr>`;
             } else {
                 tbody.innerHTML = weekRecords.map(record => `
                     <tr>
-                        <td><span class="group-color" style="background:${record.groupColor}"></span></td>
                         <td>${record.dateAdded}</td>
-                        <td>${record.channel}</td>
-                        ${record.coupons.map((v, i) => `
-                            <td onclick="showCouponEditor(${record.id})">
-                                ${v !== null ? v : '-'}
-                                <span class="edit-btn">✎</span>
-                            </td>
-                        `).join('')}
+                        <td>
+                            ${record.channel}
+                            <span class="edit-btn" onclick="showCouponEditor(${record.id})">✎</span>
+                        </td>
+                        <td onclick="toggleCheckboxState(${record.id}, 0)" style="cursor:pointer;">${checkboxStates[record.id + '-0'] ? '☑ ' : '☐ '}${record.coupons[0] !== null ? record.coupons[0] : ''}</td>
+                        <td onclick="toggleCheckboxState(${record.id}, 1)" style="cursor:pointer;">${checkboxStates[record.id + '-1'] ? '☑ ' : '☐ '}${record.coupons[1] !== null ? record.coupons[1] : ''}</td>
+                        <td onclick="toggleCheckboxState(${record.id}, 2)" style="cursor:pointer;">${checkboxStates[record.id + '-2'] ? '☑ ' : '☐ '}${record.coupons[2] !== null ? record.coupons[2] : ''}</td>
                         <td><strong>$${record.total}</strong></td>
                         <td>${record.expiry}</td>
                         <td>
@@ -713,8 +719,17 @@
 
 
 
-        // ==================== 初始化 ====================
         // 初始化
+        // 獨立checkbox狀態（純UI用途，不影響優惠券數據）
+        let checkboxStates = JSON.parse(localStorage.getItem('checkboxStates')) || {};
+        // 追蹤哪些券被修改過（用於設定視窗）
+        let modifiedCouponKeys = {};
+        function toggleCheckboxState(recordId, couponIndex) {
+            const key = recordId + '-' + couponIndex;
+            checkboxStates[key] = !checkboxStates[key];
+            localStorage.setItem('checkboxStates', JSON.stringify(checkboxStates));
+            renderTable();
+        }
         function init() {
             updateCurrentDate();
             renderWeekSelector();
