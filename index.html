@@ -357,6 +357,14 @@
             return Math.floor(diffDays / 7) + 1;
         }
 
+        // 取得該週的星期四
+        function getWeekThursday(weekNum) {
+            const weekInfo = getWeekInfo(weekNum);
+            const thursday = new Date(weekInfo.start);
+            thursday.setDate(thursday.getDate() + 4); // 星期日=0, 星期四=4
+            return thursday.toISOString().split('T')[0];
+        }
+
         // ==================== 每週選擇 ====================
         function renderWeekSelector() {
             const selector = document.getElementById('weekSelector');
@@ -440,7 +448,7 @@
                 return;
             }
             const today = new Date();
-            const expiry = getNextThursday();
+            const expiry = getWeekThursday(selectedWeek);  // 改為該週的星期四
             const newRecord = {
                 id: Date.now(),
                 channel,
@@ -473,6 +481,7 @@
                 <div style="position:relative;"><span onclick="this.parentElement.parentElement.remove();" style="position:absolute;top:-5px;right:0;font-size:24px;cursor:pointer;color:#888;">&times;</span></div>
                 <h3>${record.channel} - 設定消費券</h3>
                 <p style="color:#666;font-size:0.9rem;margin-bottom:10px;">第 ${record.weekNum} 週</p>
+                <p style="color:#e74c3c;font-size:0.85rem;margin-bottom:10px;">過期日：${record.expiry}</p>
                 ${record.coupons.map((val, i) => `
                     <div class="coupon-section">
                         <label>券 ${i + 1}：</label>
@@ -535,13 +544,6 @@
             saveData();
             renderTable();
             updateSummary();
-        }
-
-        function getNextThursday() {
-            const date = new Date();
-            const daysUntilThursday = (4 - date.getDay() + 7) % 7 || 7;
-            date.setDate(date.getDate() + daysUntilThursday);
-            return date.toISOString().split('T')[0];
         }
 
         function renderTable() {
