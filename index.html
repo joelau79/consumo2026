@@ -254,11 +254,11 @@
     <!-- Summary -->
     <div class="summary-container">
         <div class="summary-item">
-            <span>本週須消費總金額</span>
+            <span>本週尚須消費總金額</span>
             <span class="summary-value" id="totalConsumption">$0</span>
         </div>
         <div class="summary-item">
-            <span>本週已取得的消費券總額</span>
+            <span>本週尚可使用的消費券總額</span>
             <span class="summary-value" id="weekInputTotal">$0</span>
         </div>
     </div>
@@ -632,16 +632,26 @@
         function updateSummary() {
             // 本週記錄
             const weekRecords = records.filter(r => r.weekNum === selectedWeek);
-            const totalConsumption = weekRecords.reduce((sum, r) => sum + r.total, 0);
             
-            document.getElementById('totalConsumption').textContent = '$' + totalConsumption;
-            
-            // 更新週按鈕狀態
-            const weekRecords2 = records.filter(r => r.weekNum === selectedWeek);
-            const inputTotal = weekRecords2.reduce((sum, r) => {
-                return sum + r.coupons.filter(v => v !== null).reduce((s, v) => s + v, 0);
+            // 本週尚可使用的消費券總額 = 只有☑（已點擊 = 未使用）的消費券
+            const inputTotal = weekRecords.reduce((sum, r) => {
+                return sum + r.coupons.reduce((couponSum, v, i) => {
+                    if (v === null) return couponSum;
+                    return checkboxStates[r.id + '-' + i] ? couponSum + v : couponSum;
+                }, 0);
             }, 0);
+            
             document.getElementById('weekInputTotal').textContent = '$' + inputTotal;
+            
+            // 本週須消費總金額 = 只有☑（已點擊 = 未使用）的消費券
+            const totalConsumption = weekRecords.reduce((sum, r) => {
+                return sum + r.coupons.reduce((couponSum, v, i) => {
+                    if (v === null) return couponSum;
+                    return checkboxStates[r.id + '-' + i] ? couponSum + v : couponSum;
+                }, 0);
+            }, 0);
+            // 本週須消費總金額 = 本週尚可使用的消費券總額 × 3
+            document.getElementById('totalConsumption').textContent = '$' + (inputTotal * 3);
         }
 
         function renderWeekHistory() {
