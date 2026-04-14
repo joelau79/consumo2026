@@ -516,7 +516,10 @@
                             checkboxStates[recordId + '-' + i] = true;
                         }
                     }
-                    record.total = record.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0) * 3;
+                    record.total = record.coupons.reduce((sum, v, idx) => {
+                        if (v === null) return sum;
+                        return checkboxStates[recordId + '-' + idx] ? sum + v : sum;
+                    }, 0) * 3;
                 }
                 delete pendingSelections[recordId];
                 delete modifiedCouponKeys[recordId];
@@ -547,7 +550,14 @@
         function updateCoupon(recordId, index, value) {
             const record = records.find(r => r.id === recordId);
             record.coupons[index] = value === 0 ? null : value;
-            record.total = record.coupons.filter(v => v !== null).reduce((sum, v) => sum + v, 0) * 3;
+            // 當金額被設定時，checkbox自動變成已點擊（☑）
+            if (value !== 0) {
+                checkboxStates[recordId + '-' + index] = true;
+            }
+            record.total = record.coupons.reduce((sum, v, idx) => {
+                if (v === null) return sum;
+                return checkboxStates[recordId + '-' + idx] ? sum + v : sum;
+            }, 0) * 3;
             saveData();
             renderTable();
             updateSummary();
@@ -572,7 +582,10 @@
                         <td onclick="toggleCheckboxState(${record.id}, 0)" style="cursor:pointer;">${checkboxStates[record.id + '-0'] ? '☑ ' : '☐ '}${record.coupons[0] !== null ? record.coupons[0] : ''}</td>
                         <td onclick="toggleCheckboxState(${record.id}, 1)" style="cursor:pointer;">${checkboxStates[record.id + '-1'] ? '☑ ' : '☐ '}${record.coupons[1] !== null ? record.coupons[1] : ''}</td>
                         <td onclick="toggleCheckboxState(${record.id}, 2)" style="cursor:pointer;">${checkboxStates[record.id + '-2'] ? '☑ ' : '☐ '}${record.coupons[2] !== null ? record.coupons[2] : ''}</td>
-                        <td><strong>$${record.total}</strong></td>
+                        <td><strong>$${record.coupons.reduce((sum, v, idx) => {
+                            if (v === null) return sum;
+                            return checkboxStates[record.id + '-' + idx] ? sum + v : sum;
+                        }, 0) * 3}</strong></td>
                         <td>${record.expiry}</td>
                         <td>
                             <span class="edit-btn" onclick="deleteRecord(${record.id})" style="color:red;">刪除</span>
