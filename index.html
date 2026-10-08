@@ -247,7 +247,7 @@
         </div>
         <div class="week-selector" id="weekSelector"></div>
         <div class="current-week-info">
-            <span class="date-range" id="currentWeekTitle">第 1 週 (4/12 - 4/18)</span>
+            <span class="date-range" id="currentWeekTitle">第 1 週 (10/09 - 10/15)</span>
         </div>
     </div>
 
@@ -320,8 +320,8 @@
         let showOnlyValid = false;
         let selectedWeek = 1;
 
-        // 起始日期：2026年4月12日（星期日）為第1週
-        const START_DATE = new Date('2026-04-12');
+        // 起始日期：2026年10月9日（星期五）為第1週
+        const START_DATE = new Date('2026-10-09');
 
         const channels = [
             '中銀 BOC', '工銀 ICBC', '支付寶 Alipay', '澳門通 MPay',
@@ -359,7 +359,7 @@
         function getWeekThursday(weekNum) {
             const weekInfo = getWeekInfo(weekNum);
             const thursday = new Date(weekInfo.start);
-            thursday.setDate(thursday.getDate() + 4); // 星期日=0, 星期四=4
+            thursday.setDate(thursday.getDate() + 4); // 星期五=0, 星期四=4
             return thursday.toISOString().split('T')[0];
         }
 
