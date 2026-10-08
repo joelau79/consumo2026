@@ -355,12 +355,10 @@
             return Math.floor(diffDays / 7) + 1;
         }
 
-        // 取得該週的星期四
-        function getWeekThursday(weekNum) {
+        // 取得該週的最後一日（過期日）
+        function getWeekExpiry(weekNum) {
             const weekInfo = getWeekInfo(weekNum);
-            const thursday = new Date(weekInfo.start);
-            thursday.setDate(thursday.getDate() + 4); // 星期五=0, 星期四=4
-            return thursday.toISOString().split('T')[0];
+            return weekInfo.end.toISOString().split('T')[0];
         }
 
         // ==================== 每週選擇 ====================
@@ -446,7 +444,7 @@
                 return;
             }
             const today = new Date();
-            const expiry = getWeekThursday(selectedWeek);  // 改為該週的星期四
+            const expiry = getWeekExpiry(selectedWeek);  // 該週的最後一日
             const newRecord = {
                 id: Date.now(),
                 channel,
