@@ -375,9 +375,13 @@
                 selector.appendChild(btn);
             }
             
-            // 設置當前週為 active
-            selectedWeek = getCurrentWeek();
-            if (selectedWeek > 10) selectedWeek = 10;
+            // 設置當前週為 active（只在初始化時）
+            const currentWeek = getCurrentWeek();
+            if (currentWeek >= 1 && currentWeek <= 10) {
+                selectedWeek = currentWeek;
+            } else if (selectedWeek > 10) {
+                selectedWeek = 10;
+            }
             
             const buttons = selector.querySelectorAll('.week-btn');
             buttons.forEach(btn => {
